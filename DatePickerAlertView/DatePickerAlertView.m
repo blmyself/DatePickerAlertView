@@ -338,6 +338,10 @@ return iPhoneX;\
         [_fromTimeButton setTitle:FROM_TIME_BUTTON_PLACEHOLDER forState:UIControlStateNormal];
         [_fromTimeButton setTitleColor:TAG_COLOR forState:UIControlStateNormal];
         [_fromTimeButton setTitleColor:HIGHLIGHTED_COLOR forState:UIControlStateSelected];
+        [_fromTimeButton setImageEdgeInsets:UIEdgeInsetsMake(0, 0, 0, 10)];
+        [_fromTimeButton setImage:[UIImage imageNamed:@"qi_icon_nor"] forState:UIControlStateNormal];
+        [_fromTimeButton setImage:[UIImage imageNamed:@"qi_icon_sel"] forState:UIControlStateSelected];
+        
         _fromTimeButton.titleLabel.font = [UIFont systemFontOfSize:13.0f];
         [_fromTimeButton addTarget:self action:@selector(timeButtonAction) forControlEvents:UIControlEventTouchUpInside];
         
@@ -355,6 +359,10 @@ return iPhoneX;\
         [_toTimeButton setTitle:TO_TIME_BUTTON_PLACEHOLDER forState:UIControlStateNormal];
         [_toTimeButton setTitleColor:TAG_COLOR forState:UIControlStateNormal];
         [_toTimeButton setTitleColor:HIGHLIGHTED_COLOR forState:UIControlStateSelected];
+        [_toTimeButton setImageEdgeInsets:UIEdgeInsetsMake(0, 0, 0, 10)];
+        [_toTimeButton setImage:[UIImage imageNamed:@"zhi_icon_nor"] forState:UIControlStateNormal];
+        [_toTimeButton setImage:[UIImage imageNamed:@"zhi_icon_sel"] forState:UIControlStateSelected];
+        
         _toTimeButton.titleLabel.font = [UIFont systemFontOfSize:13.0f];
         [_toTimeButton addTarget:self action:@selector(timeButtonAction) forControlEvents:UIControlEventTouchUpInside];
         
