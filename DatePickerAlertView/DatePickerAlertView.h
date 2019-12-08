@@ -19,27 +19,30 @@
 
 /**
  显示时间选择器
-
+ 
  @param selectCompletion 完成回调
  */
-+ (void)showDatePickerAlertViewWithSelectCompletion:(void (^)(NSDate *fromDate, NSDate *toDate))selectCompletion;
++ (DatePickerAlertView *)showDatePickerAlertViewWithSelectCompletion:(void (^)(NSDate *fromDate, NSDate *toDate))selectCompletion;
 
 /**
  显示时间选择器(带时间格式，选择器类型)
-
+ 
  @param dateFormat 时间格式
  @param datePickerMode 选择器类型
  @param selectCompletion 完成回调
  */
-+ (void)showDatePickerAlertViewWithDateFormat:(NSString *)dateFormat datePickerMode:(UIDatePickerMode)datePickerMode selectCompletion:(void (^)(NSDate *fromDate, NSDate *toDate))selectCompletion;
++ (DatePickerAlertView *)showDatePickerAlertViewWithDateFormat:(NSString *)dateFormat datePickerMode:(UIDatePickerMode)datePickerMode selectCompletion:(void (^)(NSDate *fromDate, NSDate *toDate))selectCompletion;
 
 /**
  日期转换
-
+ 
  @param date 日期
  @param format 日期格式
  @return 日期字符串
  */
 + (NSString *)dateStringWithDate:(NSDate *)date format:(NSString *)format;
+
+- (void)preSetFromDate:(NSDate *)fDate;
+- (void)preSetToDate:(NSDate *)tDate;
 
 @end

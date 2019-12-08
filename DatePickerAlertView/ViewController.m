@@ -12,7 +12,8 @@
 @interface ViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *fromTimeLB;
 @property (weak, nonatomic) IBOutlet UILabel *toTimeLB;
-
+@property (strong, nonatomic) NSDate * fromeDate;
+@property (strong, nonatomic) NSDate * toDate;
 @end
 
 @implementation ViewController
@@ -29,19 +30,30 @@
 }
 
 - (IBAction)clicked:(UIButton *)sender {
-    [DatePickerAlertView showDatePickerAlertViewWithDateFormat:sender.currentTitle
-                                                datePickerMode:[@{D_yyyyMMddHHmmss : @(UIDatePickerModeDateAndTime),
-                                                                  D_yyyy_MM_dd : @(UIDatePickerModeDate),
-                                                                  D_HHmm : @(UIDatePickerModeTime)
-                                                                  }[sender.currentTitle] integerValue]
-                                              selectCompletion:^(NSDate *fromDate, NSDate *toDate) {
-        self.fromTimeLB.text = [DatePickerAlertView dateStringWithDate:fromDate format:sender.currentTitle];
-        self.toTimeLB.text = [DatePickerAlertView dateStringWithDate:toDate format:sender.currentTitle];
-    }];
-//    [DatePickerAlertView showDatePickerAlertViewWithSelectCompletion:^(NSDate *fromDate, NSDate *toDate) {
-//        self.fromTimeLB.text = [DatePickerAlertView dateStringWithDate:fromDate format:D_yyyy_MM_dd];
-//        self.toTimeLB.text = [DatePickerAlertView dateStringWithDate:toDate format:D_yyyy_MM_dd];
-//    }];
+    DatePickerAlertView * dpAlertView =  [DatePickerAlertView showDatePickerAlertViewWithDateFormat:sender.currentTitle
+                                                                                     datePickerMode:[@{D_yyyyMMddHHmmss : @(UIDatePickerModeDateAndTime),
+                                                                                                       D_yyyy_MM_dd : @(UIDatePickerModeDate),
+                                                                                                       D_HHmm : @(UIDatePickerModeTime)
+                                                                                                       }[sender.currentTitle] integerValue]
+                                                                                   selectCompletion:^(NSDate *fromDate, NSDate *toDate) {
+                                                                                       self.fromTimeLB.text = [DatePickerAlertView dateStringWithDate:fromDate format:sender.currentTitle];
+                                                                                       self.toTimeLB.text = [DatePickerAlertView dateStringWithDate:toDate format:sender.currentTitle];
+                                                                                       self.fromeDate = fromDate;
+                                                                                       self.toDate = toDate;
+                                                                                   }];
+    if (self.fromeDate) {
+        [dpAlertView preSetFromDate:self.fromeDate];
+    }
+    
+    if (self.toDate) {
+        [dpAlertView preSetToDate:self.toDate];
+    }
+    
+    //    [DatePickerAlertView showDatePickerAlertViewWithSelectCompletion:^(NSDate *fromDate, NSDate *toDate) {
+    //        self.fromTimeLB.text = [DatePickerAlertView dateStringWithDate:fromDate format:D_yyyy_MM_dd];
+    //        self.toTimeLB.text = [DatePickerAlertView dateStringWithDate:toDate format:D_yyyy_MM_dd];
+    //    }];
 }
 
 @end
+

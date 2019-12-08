@@ -118,12 +118,12 @@ return iPhoneX;\
 
 #define HexColor(c) [UIColor colorWithRed:((c>>16)&0xFF)/255.0f green:((c>>8)&0xFF)/255.0f blue:(c&0xFF)/255.0f alpha:1.0f]
 #define TEXT_COLOR           HexColor(0x111111)    //文本默认显示颜色
-#define HIGHLIGHTED_COLOR    HexColor(0x25c97c)    //文本高亮显示颜色
+#define HIGHLIGHTED_COLOR    HexColor(0x36B38B)    //文本高亮显示颜色
 #define BACKGROUNG_COLOR     HexColor(0xf5f7f9)
 #define TAG_COLOR            HexColor(0x999999)
 
 #define ANIMATION_DURATION   0.5f      //动画时长
-#define WINDOWVIEW_HEIGHT    300.0f    //显示视图高度
+#define WINDOWVIEW_HEIGHT    351.0f    //显示视图高度
 #define PICKERVIEW_HEIGHT    200.0f    //时间选择器高度
 #define MARGIN               15.0f     //边距
 #define LABEL_WIDTH          40.0f     //"至"label宽度
@@ -143,6 +143,7 @@ return iPhoneX;\
 @property (nonatomic, strong) UIWindow *window;                     //window
 @property (nonatomic, strong) UIView *blackMask;                    //黑色笼罩
 @property (nonatomic, strong) UIView *windowView;                   //显示view
+@property (strong, nonatomic) UILabel * titleLabel;                 //标题label
 
 @property (nonatomic, strong) UIDatePicker *datePicker;             //时间选择器
 
@@ -164,11 +165,11 @@ return iPhoneX;\
 
 @implementation DatePickerAlertView
 
-+ (void)showDatePickerAlertViewWithSelectCompletion:(void (^)(NSDate *fromDate, NSDate *toDate))selectCompletion {
-    [self showDatePickerAlertViewWithDateFormat:D_yyyy_MM_dd datePickerMode:UIDatePickerModeDate selectCompletion:selectCompletion];
++ (DatePickerAlertView *)showDatePickerAlertViewWithSelectCompletion:(void (^)(NSDate *fromDate, NSDate *toDate))selectCompletion {
+    return  [self showDatePickerAlertViewWithDateFormat:D_yyyy_MM_dd datePickerMode:UIDatePickerModeDate selectCompletion:selectCompletion];
 }
 
-+ (void)showDatePickerAlertViewWithDateFormat:(NSString *)dateFormat datePickerMode:(UIDatePickerMode)datePickerMode selectCompletion:(void (^)(NSDate *fromDate, NSDate *toDate))selectCompletion {
++ (DatePickerAlertView *)showDatePickerAlertViewWithDateFormat:(NSString *)dateFormat datePickerMode:(UIDatePickerMode)datePickerMode selectCompletion:(void (^)(NSDate *fromDate, NSDate *toDate))selectCompletion {
     DatePickerAlertView *alertView = [[DatePickerAlertView alloc] init];
     alertView.didSelectDate = ^(NSDate *fromDate, NSDate *toDate) {
         if (selectCompletion) selectCompletion(fromDate, toDate);
@@ -177,6 +178,7 @@ return iPhoneX;\
     alertView.datePickerMode = datePickerMode;
     [alertView resetAction];
     [alertView show];
+    return alertView;
 }
 
 - (instancetype)init
@@ -192,10 +194,13 @@ return iPhoneX;\
         [self.windowView setPosition:CGPointMake(0, SCREEN_HEIGHT) atAnchorPoint:CGPointZero];
         [self addSubview:self.windowView];
         
-        [self.fromTimeButton setPosition:CGPointMake(MARGIN, MARGIN) atAnchorPoint:CGPointZero];
+        [self.titleLabel setPosition:CGPointMake(MARGIN, MARGIN) atAnchorPoint:CGPointZero];
+        [self.windowView addSubview:self.titleLabel];
+        
+        [self.fromTimeButton setPosition:CGPointMake(MARGIN, CGRectGetMaxY(self.titleLabel.frame)+MARGIN) atAnchorPoint:CGPointZero];
         [self.windowView addSubview:self.fromTimeButton];
         
-        [self.toTimeButton setPosition:CGPointMake(SCREEN_WIDTH - MARGIN, MARGIN) atAnchorPoint:CGPointMake(1, 0)];
+        [self.toTimeButton setPosition:CGPointMake(SCREEN_WIDTH - MARGIN, CGRectGetMaxY(self.titleLabel.frame)+MARGIN) atAnchorPoint:CGPointMake(1, 0)];
         [self.windowView addSubview:self.toTimeButton];
         
         [self.datePicker setPosition:CGPointMake(0, CGRectGetMaxY(self.fromTimeButton.frame) + MARGIN) atAnchorPoint:CGPointZero];
@@ -219,11 +224,32 @@ return iPhoneX;\
     return self;
 }
 
+- (void)preSetFromDate:(NSDate *)fDate{
+    self.fromDate = fDate;
+    [self.datePicker setDate:self.fromDate animated:NO];
+    self.fromTimeButton.selected = YES;
+    self.toTimeButton.selected = NO;
+    [self.fromTimeButton setTitle:[self.class dateStringWithDate:_fromDate format:_dateFormat] forState:UIControlStateNormal];
+}
+
+- (void)preSetToDate:(NSDate *)tDate{
+    self.toDate = tDate;
+    [self.datePicker setDate:self.toDate animated:NO];
+    self.toTimeButton.selected = YES;
+    self.fromTimeButton.selected = NO;
+    [self.toTimeButton setTitle:[self.class dateStringWithDate:_toDate format:_dateFormat] forState:UIControlStateNormal];
+}
+
 - (void)resetAction {
     self.fromDate = [NSDate date];
     [self.datePicker setDate:self.fromDate animated:YES];
     self.fromTimeButton.selected = YES;
     [self.fromTimeButton setTitle:[self.class dateStringWithDate:_fromDate format:_dateFormat] forState:UIControlStateNormal];
+    
+    //    self.fromDate = nil;
+    //    self.fromTimeButton.selected = NO;
+    //    [self.fromTimeButton setTitle:FROM_TIME_BUTTON_PLACEHOLDER forState:UIControlStateNormal];
+    
     
     self.toDate = nil;
     self.toTimeButton.selected = NO;
@@ -244,6 +270,13 @@ return iPhoneX;\
 - (void)timeButtonAction {
     self.toTimeButton.selected = self.fromTimeButton.selected;
     self.fromTimeButton.selected = !self.fromTimeButton.selected;
+    
+    if (self.toTimeButton.selected && [[self.toTimeButton titleForState:UIControlStateNormal] isEqualToString:TO_TIME_BUTTON_PLACEHOLDER]) {
+        [self dataPickerChanged:self.datePicker];
+    }else if (self.fromTimeButton.selected && [[self.fromTimeButton titleForState:UIControlStateNormal] isEqualToString:FROM_TIME_BUTTON_PLACEHOLDER]){
+        [self dataPickerChanged:self.datePicker];
+    }
+    
 }
 
 - (void)dataPickerChanged:(UIDatePicker *)datePicker {
@@ -275,7 +308,11 @@ return iPhoneX;\
 }
 
 - (BOOL)judgeDateIsErrorWithFromDate:(NSDate *)fromDate toDate:(NSDate *)toDate {
-    if (fromDate && toDate && fromDate.timeIntervalSinceReferenceDate >= toDate.timeIntervalSinceReferenceDate) return YES;
+    
+    NSString * fDStr = [self.class dateStringWithDate:fromDate format:_dateFormat];
+    NSString * tDStr = [self.class dateStringWithDate:toDate format:_dateFormat];
+    if (fromDate && toDate && [fDStr compare:tDStr] == NSOrderedDescending) return YES;
+    
     return NO;
 }
 
@@ -391,6 +428,17 @@ return iPhoneX;\
     return _datePicker;
 }
 
+- (UILabel *)titleLabel {
+    if (!_titleLabel) {
+        _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH-2*MARGIN, 21)];
+        _titleLabel.text = @"请选择起止时间";
+        _titleLabel.textAlignment = NSTextAlignmentCenter;
+        _titleLabel.textColor = TEXT_COLOR;
+        _titleLabel.font = [UIFont systemFontOfSize:17.0f];
+    }
+    return _titleLabel;
+}
+
 - (UIButton *)resetButton {
     if (!_resetButton) {
         _resetButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, BOTTOM_BUTTON_WIDTH, BOTTOM_BUTTON_HEIGHT)];
@@ -418,3 +466,4 @@ return iPhoneX;\
 }
 
 @end
+
